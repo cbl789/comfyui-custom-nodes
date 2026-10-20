@@ -42,12 +42,12 @@ under **utilities**.
 - Outputs remain `width`, `height`, followed by the new `latent` output.
 - Connect `latent` directly to the sampler's latent input instead of using an
   additional Empty Latent Image node.
-- Choose `SD / SDXL`, `SD3 / Flux`, or `Flux 2 / Klein` to match the empty-latent
-  node your workflow normally uses. These are image latents; video and layered
-  image latents require their own generators.
-- For Flux 2 / Klein, set advanced `multiple` to **16** (or 32, 48, etc.).
-  For the other formats use **8** or a multiple of 8. Incompatible dimensions
-  raise an error instead of silently generating a different image size.
+- Choose the matching model preset from `latent_format` (see the table below).
+  These are image latents; video and layered-image generation require their own generators.
+- New nodes default to **Flux 2 / Klein** and advanced `multiple` **32**, which
+  produces dimensions compatible with every preset. Existing workflows keep their
+  saved preset and rounding value. Incompatible dimensions raise an error rather
+  than silently changing the image size.
 - Advanced `batch_size` defaults to 1.
 - Turn `generate_latent` off for dimensions only; no latent tensor is allocated.
   The latent socket stays visible and returns `None` when disabled. Disconnect
@@ -55,6 +55,34 @@ under **utilities**.
 
 The dimension preview is not a generated image preview. Without a reference,
 width and height match the built-in node exactly.
+
+## Image latent presets
+
+| Preset | Channels | Spatial compression | Representation | Dimension alignment |
+| --- | --- | --- | --- | --- |
+| Flux 2 / Klein | 128 | 16x | Image | 16 |
+| Flux 3 | 128 | 16x | Image | 16 |
+| Qwen Image 2.1 | 64 | 16x | Image | 16 |
+| Krea 2 | 16 | 8x | Single image frame | 16 |
+| Qwen Image (before 2.1) | 16 | 8x | Single image frame | 16 |
+| Z-Image / HiDream | 16 | 8x | Image | 16 |
+| Hunyuan Image 2.1 | 64 | 32x | Image | 32 |
+| HiDream-O1 | 3 | 1x | Pixel space | 32 |
+| SD / SDXL | 4 | 8x | Image | 8 |
+| SD3 / Flux | 16 | 8x | Image | 8 |
+
+Dimension alignment is the required pixel increment for each preset. A `multiple`
+of 32 works for all of them. These choices are explicit model presets, not automatic
+model detection. Ordinary Z-Image and Z-Image Pixel Space are different variants;
+the Z-Image preset above is for the ordinary latent-space model.
+
+Krea 2 and older Qwen Image use a singleton frame axis (`B,C,1,H,W`), not a video
+sequence. Existing SD3/Flux outputs also work with standard ComfyUI samplers for
+these models because ComfyUI inserts the frame axis automatically.
+
+HiDream-O1 follows its built-in generator's limits: dimensions 64–4096 and batch
+size 1–64. Its documented training resolution is approximately 4 MP. Modern presets
+require a ComfyUI version containing the corresponding model support.
 
 ## Upstream
 

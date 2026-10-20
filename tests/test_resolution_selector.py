@@ -103,14 +103,30 @@ class ResolutionSelectorTests(unittest.TestCase):
 
     def test_all_latent_formats_match_reference_dimensions_and_batch_size(self):
         image = torch.empty((3, 3, 2, 3))
-        for fmt, channels, divisor in zip(_module.FORMATS, (4, 16, 128), (8, 8, 16)):
+        specs = {
+            "SD / SDXL (4 channels)": (4, 8, False),
+            "SD3 / Flux (16 channels)": (16, 8, False),
+            "Flux 2 / Klein (128 channels)": (128, 16, False),
+            "Flux 3 (128 channels)": (128, 16, False),
+            "Qwen Image 2.1 (64 channels)": (64, 16, False),
+            "Krea 2 (16 channels, single frame)": (16, 8, True),
+            "Qwen Image (16 channels, single frame)": (16, 8, True),
+            "Z-Image / HiDream (16 channels)": (16, 8, False),
+            "Hunyuan Image 2.1 (64 channels)": (64, 32, False),
+            "HiDream-O1 (pixel space)": (3, 1, False),
+        }
+        self.assertEqual(set(specs), set(_module.FORMATS))
+        for fmt, (channels, divisor, single_frame) in specs.items():
             with self.subTest(format=fmt):
                 width, height, latent = Node.execute(
-                    "1:1 (Square)", 0.1, 16, reference_image=image,
+                    "1:1 (Square)", 0.1, 32, reference_image=image,
                     latent_format=fmt, batch_size=2,
                 ).result
                 samples = latent["samples"]
-                self.assertEqual(tuple(samples.shape), (2, channels, height // divisor, width // divisor))
+                expected = (2, channels, height // divisor, width // divisor)
+                if single_frame:
+                    expected = (2, channels, 1, height // divisor, width // divisor)
+                self.assertEqual(tuple(samples.shape), expected)
                 self.assertEqual(samples.device.type, "cpu")
                 self.assertEqual(torch.count_nonzero(samples).item(), 0)
 
@@ -139,7 +155,26 @@ class ResolutionSelectorTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "divisible by 16"):
             Node.execute("1:1 (Square)", 0.1, 8,
                          reference_image=torch.empty((1, 3, 2, 3)),
-                         latent_format=_module.FORMATS[2])
+                         latent_format="Flux 2 / Klein (128 channels)")
+
+    def test_legacy_format_names_remain_valid(self):
+        choices = next(item.options for item in Node.define_schema().inputs
+                       if item.id == "latent_format")
+        for fmt in ("SD / SDXL (4 channels)", "SD3 / Flux (16 channels)",
+                    "Flux 2 / Klein (128 channels)"):
+            self.assertIn(fmt, choices)
+
+    def test_qwen21_metadata_uses_16_pixel_compression(self):
+        result = Node.execute("1:1 (Square)", 0.1, 16,
+                              latent_format="Qwen Image 2.1 (64 channels)")
+        self.assertEqual(result[2]["downscale_ratio_spacial"], 16)
+
+    def test_hidream_o1_rejects_out_of_range_sizes_and_batches(self):
+        for args in ((16.0, "21:9 (Ultrawide)", 1), (0.1, "1:1 (Square)", 65)):
+            mp, ratio, batch = args
+            with self.assertRaisesRegex(ValueError, "HiDream-O1 requires"):
+                Node.execute(ratio, mp, 32, latent_format="HiDream-O1 (pixel space)",
+                             batch_size=batch)
 
 
 if __name__ == "__main__":
