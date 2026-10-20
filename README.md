@@ -1,4 +1,10 @@
-# Resolution Selector + Latent
+# ComfyUI Custom Nodes
+
+A collection of custom nodes for ComfyUI.
+
+## Included nodes
+
+### Resolution Selector + Latent
 
 ComfyUI's built-in Resolution Selector, extended with an empty `LATENT` output.
 Requires a recent ComfyUI with the built-in `ResolutionSelector` and V3 node API.
@@ -15,7 +21,7 @@ and empty-latent generators. No additional Python packages or frontend scripts.
 
 ## Install
 
-Copy this directory to `ComfyUI/custom_nodes/comfyui-resolution-selector-latent`,
+Copy this directory to `ComfyUI/custom_nodes/comfyui-custom-nodes`,
 restart ComfyUI, and refresh the browser. Search for **Resolution Selector + Latent**
 under **utilities**.
 
