@@ -1,0 +1,27 @@
+{
+  "lighting": {
+    "None": "",
+    "Soft window light": "Soft window light falls from one side, with gentle shadow transitions and a natural balance of highlights and shadows.",
+    "Open shade": "Even daylight in open shade, with soft shadows and restrained highlights.",
+    "Overcast daylight": "Diffuse overcast daylight, with broad illumination and delicate shading.",
+    "Direct sunlight": "Direct sunlight creates crisp directional shadows and distinct highlights, with detail retained in the lit and shaded areas.",
+    "Golden hour": "Low golden-hour sunlight creates warm directional highlights and long, soft-edged shadows.",
+    "Studio softbox": "A large studio softbox provides directional light with smooth shadow transitions and controlled highlights.",
+    "On-camera flash": "Direct on-camera flash gives a candid photographic look, with crisp highlights and a clear falloff into the background.",
+    "Indoor practical light": "Available indoor light from nearby lamps, with gentle falloff and believable differences between lit and shaded areas."
+  },
+  "style": {
+    "None": "",
+    "Natural photography": "A natural photograph with believable photographic detail, restrained contrast, and realistic color rendering.",
+    "Unretouched portrait": "An unretouched photograph with lifelike detail and the subtle irregularity of a real photographic capture.",
+    "Candid documentary": "Candid documentary photography with an observational feel, natural color, and restrained processing.",
+    "Editorial photography": "Editorial photography with precise detail, controlled contrast, and a polished but lifelike finish.",
+    "Film photograph": "A film photograph with fine, subtle grain, gentle highlight roll-off, and restrained color grading."
+  },
+  "skin_texture": {
+    "None": "",
+    "Natural texture": "Visible skin retains subtle pores, fine texture, and gentle variations in tone, with highlights that follow the lighting.",
+    "Close-up detail": "Where the image is close enough, skin shows fine pores, delicate facial hairs, and subtle texture at a believable scale.",
+    "Soft natural texture": "Skin has softly resolved natural texture and gentle tonal variation, with smooth transitions between light and shadow."
+  }
+}

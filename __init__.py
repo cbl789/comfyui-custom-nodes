@@ -1,9 +1,10 @@
-"""Resolution selection from presets or a reference image, with optional latent."""
+"""Custom ComfyUI nodes for resolution selection and photographic prompts."""
 
 import math
 
 from comfy_api.latest import ComfyExtension, io
 from comfy_extras.nodes_resolution import ResolutionSelector
+from .prompt_assembler import LightingStylePromptAssembler
 
 WEB_DIRECTORY = "./web"
 
@@ -147,10 +148,10 @@ class ResolutionSelectorLatent(ResolutionSelector):
         return io.NodeOutput(width, height, latent, ui=ui)
 
 
-class ResolutionSelectorLatentExtension(ComfyExtension):
+class CustomNodesExtension(ComfyExtension):
     async def get_node_list(self):
-        return [ResolutionSelectorLatent]
+        return [ResolutionSelectorLatent, LightingStylePromptAssembler]
 
 
 async def comfy_entrypoint():
-    return ResolutionSelectorLatentExtension()
+    return CustomNodesExtension()
