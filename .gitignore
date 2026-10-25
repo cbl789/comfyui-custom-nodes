@@ -27,3 +27,6 @@ env/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Krea 2 Prompt Writer: copy of the krea2-prompting skill, synced on deploy from its own repo
+skills/

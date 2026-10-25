@@ -45,7 +45,8 @@ class ResolutionSelectorTests(unittest.TestCase):
         registered = asyncio.run(extension.get_node_list())
         self.assertIn(Node, registered)
         self.assertEqual({item.define_schema().node_id for item in registered},
-                         {"ResolutionSelectorWithLatent", "LightingStylePromptAssembler"})
+                         {"ResolutionSelectorWithLatent", "LightingStylePromptAssembler",
+                          "Krea2PromptWriter"})
 
     def test_no_reference_matches_builtin_all_presets(self):
         with patch.object(torch, "zeros", side_effect=AssertionError("Unexpected allocation")):

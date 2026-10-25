@@ -1,10 +1,11 @@
-"""Custom ComfyUI nodes for resolution selection and photographic prompts."""
+"""Custom ComfyUI nodes for resolution selection, photographic prompts and Krea 2 prompt writing."""
 
 import math
 
 from comfy_api.latest import ComfyExtension, io
 from comfy_extras.nodes_resolution import ResolutionSelector
 from .prompt_assembler import LightingStylePromptAssembler
+from .krea2_prompt_writer import Krea2PromptWriter
 
 WEB_DIRECTORY = "./web"
 
@@ -150,7 +151,7 @@ class ResolutionSelectorLatent(ResolutionSelector):
 
 class CustomNodesExtension(ComfyExtension):
     async def get_node_list(self):
-        return [ResolutionSelectorLatent, LightingStylePromptAssembler]
+        return [ResolutionSelectorLatent, LightingStylePromptAssembler, Krea2PromptWriter]
 
 
 async def comfy_entrypoint():

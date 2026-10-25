@@ -1,6 +1,6 @@
 # ComfyUI Custom Nodes
 
-A collection of custom nodes for ComfyUI.
+A collection of custom nodes for ComfyUI: Resolution Selector + Latent, Prompt Assembler (Lighting + Style) and Krea 2 Prompt Writer.
 
 ## Included nodes
 
@@ -123,6 +123,57 @@ Results still depend on the model, LoRAs, reference images, and generation setti
 All preset text lives in `web/photo_presets.json`, shared by the backend and preview.
 Changing this bundled file requires a ComfyUI restart and browser refresh.
 
+## Krea 2 Prompt Writer
+
+A local language model writes a Krea 2 Turbo prompt from your brief, following the
+krea2-prompting skill, and revises it on request. Search for **Krea 2 Prompt Writer**
+under **utilities/prompt**. Connect `prompt` to the positive text encoder and `width` /
+`height` to the empty latent. A ready test workflow (Krea 2 Turbo INT8 with LoRA switch,
+shift 1.15 and a how-to note) is in `example_workflows/Krea 2 Prompt Writer test.json`.
+
+| Mode | What happens |
+| --- | --- |
+| Write new prompt | The model writes a prompt from `brief` |
+| Apply change | The model changes only what `change` describes in `current_prompt` and keeps everything else |
+| Keep current prompt | No model call; `current_prompt` goes to the image as it is |
+
+After every run the prompt appears in `current_prompt` (you can edit it by hand), a
+used `change` is cleared, and the mode switches to **Keep current prompt**, so running
+again renders the same prompt. Write new prompt and Apply change always call the model,
+even with unchanged inputs, so running the same brief again gives a new variant. Switch back to **Write new prompt** for a new one, or
+to **Apply change** for the next revision. With a fixed seed you see exactly what each
+change does.
+
+`aspect_ratio` **Auto** uses the ratio the model picks (vertical for UGC, selfie and
+phone shots); any other choice overrides it. `megapixels` sets the size of `width` and
+`height` (default 2, rounded to 16 for Krea 2).
+
+The model receives the writer instructions (`krea2_writer_instructions.md`), the
+skill's `SKILL.md` and its reference files: `photoreal.md` always, and `adult.md`
+when the brief or change mentions nudity or sex (`references`, advanced: Auto,
+Photoreal, Photoreal + Adult). It keeps the brief's level of explicitness: boudoir and
+lingerie stay suggestive unless you ask for more.
+
+Advanced settings: `endpoint` (default `http://192.168.50.159:8000/v1`, any
+OpenAI-compatible server reachable from the ComfyUI server), `model` (default
+`Qwen3.6-35B-A3B-Uncensored-Heretic-MLX-4bit`), `api_key`, `skill_dir`, `timeout`.
+A prompt takes about 10–35 s with the default model.
+
+### Skill files
+
+The skill is not part of this repository. Copy the krea2-prompting skill folder to
+`skills/krea2-prompting/` inside this node folder on the ComfyUI server (ignored by
+git), for example:
+
+```sh
+rsync -a --delete --exclude .git ~/repos/krea2-prompting/ \
+  <server>:<ComfyUI>/custom_nodes/comfyui-custom-nodes/skills/krea2-prompting/
+```
+
+or point `skill_dir` to another folder that contains `SKILL.md` and `references/`.
+Changes to the skill or to `krea2_writer_instructions.md` take effect on the next model call,
+without a restart.
+
 ## Upstream
 
 This extension imports ComfyUI's implementation rather than copying it:
@@ -141,4 +192,5 @@ The tests run on CPU and do not load model weights. Run the frontend hook tests 
 ```sh
 node tests/test-reference-preview.mjs
 node tests/test-prompt-assembler.mjs
+node tests/test-krea2-prompt-writer.mjs
 ```
