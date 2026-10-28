@@ -1,17 +1,23 @@
 #!/bin/zsh
-# Copy this node pack and the krea2-prompting skill to the ComfyUI server, then restart
-# the ComfyUI container if its queue is empty. Usage: ./deploy.sh [--no-restart]
+# Update the node pack and the krea2-prompting skill on the ComfyUI server with git pull, then
+# restart the ComfyUI container if its queue is empty. Usage: ./deploy.sh [--no-restart]
+# Only pushed commits reach the server: commit and push first.
 set -e
 HOST=christian@192.168.50.152
 DEST=/home/christian/ai/comfyui/custom_nodes/comfyui-custom-nodes
-SKILL=$HOME/repos/krea2-prompting
+SKILL_REPO=https://github.com/rakshazi/krea2-prompting.git
 COMFY=http://192.168.50.152:8190
 cd "$(dirname "$0")"
 
-rsync -a --exclude .git --exclude skills --exclude __pycache__ --exclude deploy.sh ./ "$HOST:$DEST/"
-ssh "$HOST" "mkdir -p $DEST/skills"
-rsync -a --delete --exclude .git "$SKILL/" "$HOST:$DEST/skills/krea2-prompting/"
-echo "Copied node pack and skill to $HOST:$DEST"
+git fetch -q origin
+if [[ -n "$(git status --porcelain)" || "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]]; then
+  echo "Warning: local changes or commits are not on origin/main; the server only gets what is pushed."
+fi
+
+ssh "$HOST" "set -e; cd $DEST; git pull -q --ff-only; git log --oneline -1
+  if [ -d skills/krea2-prompting/.git ]; then git -C skills/krea2-prompting pull -q --ff-only
+  else git clone -q $SKILL_REPO skills/krea2-prompting; fi
+  echo \"skill: \$(git -C skills/krea2-prompting log --oneline -1)\""
 
 [[ "$1" == "--no-restart" ]] && exit 0
 busy=$(curl -s -m 5 "$COMFY/queue" | python3 -c "import json,sys;d=json.load(sys.stdin);print(len(d['queue_running'])+len(d['queue_pending']))")

@@ -161,18 +161,21 @@ A prompt takes about 10–35 s with the default model.
 
 ### Skill files
 
-The skill is not part of this repository. Copy the krea2-prompting skill folder to
-`skills/krea2-prompting/` inside this node folder on the ComfyUI server (ignored by
-git), for example:
+The skill is not part of this repository. Clone it into `skills/krea2-prompting/` inside
+this node folder on the ComfyUI server (ignored by git):
 
 ```sh
-rsync -a --delete --exclude .git ~/repos/krea2-prompting/ \
-  <server>:<ComfyUI>/custom_nodes/comfyui-custom-nodes/skills/krea2-prompting/
+git clone https://github.com/rakshazi/krea2-prompting.git skills/krea2-prompting
 ```
 
 or point `skill_dir` to another folder that contains `SKILL.md` and `references/`.
 Changes to the skill or to `krea2_writer_instructions.md` take effect on the next model call,
 without a restart.
+
+### Deploy
+
+`./deploy.sh` runs `git pull` for this repository and the skill on the server, then restarts
+ComfyUI when its queue is empty (`--no-restart` to skip). Only pushed commits are deployed.
 
 ## Upstream
 
