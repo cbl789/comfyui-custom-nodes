@@ -23,7 +23,7 @@ Python packages are required.
 
 ## Install
 
-Copy this directory to `ComfyUI/custom_nodes/comfyui-custom-nodes`,
+Clone this repository into `ComfyUI/custom_nodes/comfyui-custom-nodes`,
 restart ComfyUI, and refresh the browser. Search for **Resolution Selector + Latent**
 under **utilities**, or **Prompt Assembler (Lighting + Style)** under **utilities/prompt**.
 

@@ -50,7 +50,7 @@ def build_system_prompt(skill_dir, references):
     skill_file = skill_dir / "SKILL.md"
     if not skill_file.is_file():
         raise ValueError(
-            f"krea2-prompting skill not found at {skill_dir}. Copy the skill folder there "
+            f"krea2-prompting skill not found at {skill_dir}. Clone the skill there "
             "(see the README, section Krea 2 Prompt Writer)."
         )
     parts = [INSTRUCTIONS_FILE.read_text(), "# Skill: krea2-prompting\n\n" + skill_file.read_text()]
