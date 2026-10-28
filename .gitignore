@@ -30,3 +30,6 @@ Thumbs.db
 
 # Krea 2 Prompt Writer: clone of the krea2-prompting skill (see README)
 skills/
+
+# Local mirror of ai-pose-gallery.pages.dev: its terms forbid redistributing the images
+pose-gallery/
