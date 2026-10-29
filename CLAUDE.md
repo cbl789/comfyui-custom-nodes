@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-ComfyUI custom node pack (V3 node API, `comfy_api.latest.io`), registered in `__init__.py` via `CustomNodesExtension.get_node_list`. Runs on the ComfyUI server 192.168.50.152 (Docker container `comfyui-new`, web/API on port 8190); there is no ComfyUI on this Mac.
+ComfyUI custom node pack (V3 node API, `comfy_api.latest.io`), registered in `__init__.py` via `CustomNodesExtension.get_node_list`. Runs on the ComfyUI server 192.168.50.152 (Docker container `comfyui`, web/API on port 8190); there is no ComfyUI on this Mac.
 
 ## Nodes
 
@@ -19,7 +19,7 @@ ComfyUI custom node pack (V3 node API, `comfy_api.latest.io`), registered in `__
 
 ## Deploy
 
-- The server folder is a git clone. `./deploy.sh` runs `git pull --ff-only` there and in the krea2-prompting skill clone (git-ignored `skills/krea2-prompting`, from github.com/rakshazi/krea2-prompting), then restarts `comfyui-new` only when the queue is empty. Only pushed commits reach the server; never copy files there with rsync/scp, it leaves the clone dirty and blocks `git pull`. Never restart ComfyUI (or run `deploy.sh` without `--no-restart`) unless the user said so: other jobs may be running.
+- The server folder is a git clone. `./deploy.sh` runs `git pull --ff-only` there and in the krea2-prompting skill clone (git-ignored `skills/krea2-prompting`, from github.com/rakshazi/krea2-prompting), then restarts `comfyui` only when the queue is empty. Only pushed commits reach the server; never copy files there with rsync/scp, it leaves the clone dirty and blocks `git pull`. Never restart ComfyUI (or run `deploy.sh` without `--no-restart`) unless the user said so: other jobs may be running.
 - Python and `web/` changes need a restart plus a browser refresh. `krea2_writer_instructions.md` and the skill files are read on every call: `--no-restart` is enough.
 
 ## Krea 2 Prompt Writer

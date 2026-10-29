@@ -25,7 +25,7 @@ if [[ "$busy" != "0" ]]; then
   echo "ComfyUI has $busy job(s) running or queued; not restarting. Run again when it is idle."
   exit 1
 fi
-ssh "$HOST" "docker restart comfyui-new" >/dev/null
+ssh "$HOST" "docker restart comfyui" >/dev/null
 for i in {1..60}; do
   sleep 5
   if curl -s -m 3 "$COMFY/object_info/Krea2PromptWriter" | grep -q Krea2PromptWriter; then
@@ -33,5 +33,5 @@ for i in {1..60}; do
     exit 0
   fi
 done
-echo "ComfyUI did not report the node within 5 minutes; check: ssh $HOST 'docker logs --tail 50 comfyui-new'"
+echo "ComfyUI did not report the node within 5 minutes; check: ssh $HOST 'docker logs --tail 50 comfyui'"
 exit 1
