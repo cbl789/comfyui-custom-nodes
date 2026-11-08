@@ -11,6 +11,6 @@ Deploy the node pack. Arguments: $ARGUMENTS
 3. Run `./deploy.sh $ARGUMENTS` from the repo root. It prints the deployed commit and skill commit.
    - If it reports jobs running or queued, do not restart by any other means. Tell the user and stop.
 4. Unless `--no-restart` was passed, confirm every node is registered:
-   `for n in ResolutionSelectorWithLatent LightingStylePromptAssembler Krea2PromptWriter; do curl -s -m 5 http://192.168.50.152:8190/object_info/$n | grep -q "\"$n\"" && echo "ok $n" || echo "MISSING $n"; done`
+   `for n in ResolutionSelectorWithLatent LightingStylePromptAssembler Krea2PromptWriter LoraSidecarLoader; do curl -s -m 5 http://192.168.50.152:8190/object_info/$n | grep -q "\"$n\"" && echo "ok $n" || echo "MISSING $n"; done`
    If a node is missing, show `ssh christian@192.168.50.152 'docker logs --tail 80 comfyui' 2>&1 | grep -iA5 "comfyui-custom-nodes\|Traceback"`.
 5. Report the deployed commits, whether ComfyUI restarted, and remind the user to refresh the browser.

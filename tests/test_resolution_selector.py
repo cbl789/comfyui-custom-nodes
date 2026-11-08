@@ -46,7 +46,7 @@ class ResolutionSelectorTests(unittest.TestCase):
         self.assertIn(Node, registered)
         self.assertEqual({item.define_schema().node_id for item in registered},
                          {"ResolutionSelectorWithLatent", "LightingStylePromptAssembler",
-                          "Krea2PromptWriter"})
+                          "Krea2PromptWriter", "LoraSidecarLoader"})
 
     def test_no_reference_matches_builtin_all_presets(self):
         with patch.object(torch, "zeros", side_effect=AssertionError("Unexpected allocation")):

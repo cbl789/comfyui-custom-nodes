@@ -1,6 +1,6 @@
 # ComfyUI Custom Nodes
 
-A collection of custom nodes for ComfyUI: Resolution Selector + Latent, Prompt Assembler (Lighting + Style) and Krea 2 Prompt Writer.
+A collection of custom nodes for ComfyUI: Resolution Selector + Latent, Prompt Assembler (Lighting + Style), Krea 2 Prompt Writer and LoRA Loader (Sidecar).
 
 ## Included nodes
 
@@ -25,7 +25,8 @@ Python packages are required.
 
 Clone this repository into `ComfyUI/custom_nodes/comfyui-custom-nodes`,
 restart ComfyUI, and refresh the browser. Search for **Resolution Selector + Latent**
-under **utilities**, or **Prompt Assembler (Lighting + Style)** under **utilities/prompt**.
+under **utilities**, **Prompt Assembler (Lighting + Style)** and **Krea 2 Prompt Writer**
+under **utilities/prompt**, or **LoRA Loader (Sidecar)** under **loaders**.
 
 ## Use
 
@@ -177,6 +178,34 @@ without a restart.
 `./deploy.sh` runs `git pull` for this repository and the skill on the server, then restarts
 ComfyUI when its queue is empty (`--no-restart` to skip). Only pushed commits are deployed.
 
+## LoRA Loader (Sidecar)
+
+The built-in LoRA loader plus the LoRA's sidecar metadata. Pick a LoRA and the node
+reads `<lora filename>.json` from the same folder — the v2 sidecar format documented
+in the ComfyUI host's `tools/model-sidecars` (schema, README, validator).
+
+| Control | Purpose |
+| --- | --- |
+| `mode` | **Show only** passes the prompt through unchanged. **Append triggers** adds the sidecar's trigger words to it |
+| `lora_name` | The LoRA file; its sidecar is looked up beside it |
+| `prompt` | The positive prompt. Connect your text encoder's prompt here |
+| `strength_model`, `strength_clip` | As in the built-in loader |
+| `use_sidecar_strength` | Advanced. Use the sidecar's creator-recommended model and clip strengths where it records them |
+| `preview` | Read-only summary of the sidecar, filled after the run |
+
+Outputs are `model`, `clip`, `prompt` and `triggers`. `triggers` always carries the
+words so you can use them elsewhere; `prompt` only changes in **Append triggers** mode.
+The appended text is the trigger words joined with `, ` and placed after your prompt;
+an empty prompt yields the trigger words alone.
+
+The node never invents metadata. When the sidecar is missing or malformed the
+`triggers` output is empty, the preview says so, and the LoRA still loads normally.
+Fields the sidecar does not record are left alone: `use_sidecar_strength` only
+overrides a strength that the sidecar actually has.
+
+The preview is not serialized into the workflow, so a saved workflow does not carry
+stale metadata. Refresh your browser after installing updates.
+
 ## Upstream
 
 This extension imports ComfyUI's implementation rather than copying it:
@@ -196,4 +225,5 @@ The tests run on CPU and do not load model weights. Run the frontend hook tests 
 node tests/test-reference-preview.mjs
 node tests/test-prompt-assembler.mjs
 node tests/test-krea2-prompt-writer.mjs
+node tests/test-lora-sidecar.mjs
 ```
