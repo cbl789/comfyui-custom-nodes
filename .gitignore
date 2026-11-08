@@ -34,3 +34,6 @@ Thumbs.db
 
 # Local mirror of ai-pose-gallery.pages.dev: its terms forbid redistributing the images
 pose-gallery/
+
+# One-off triage reports generated from the ComfyUI host (model metadata snapshot)
+reports/
