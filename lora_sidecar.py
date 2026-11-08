@@ -95,8 +95,8 @@ class LoraSidecarLoader(io.ComfyNode):
                 io.Boolean.Input("use_sidecar_strength", default=False, advanced=True,
                                  tooltip="Use the sidecar's creator-recommended model and clip strengths "
                                          "instead of the values above, where the sidecar records them."),
-                io.String.Input("preview", default="", multiline=True, advanced=True,
-                                tooltip="Read-only sidecar summary, filled after the run."),
+                io.String.Input("preview", default="", multiline=True,
+                                tooltip="Read-only sidecar summary, filled when a LoRA is chosen."),
             ],
             outputs=[
                 io.Model.Output("model", tooltip="The modified diffusion model."),

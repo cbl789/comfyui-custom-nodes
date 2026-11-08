@@ -21,11 +21,16 @@ class Node {
     constructor() {
         this.widgets = [
             { name: "lora_name", value: LORA, callback() { calls.push("previous-callback"); } },
-            { name: "preview", value: "" },
+            { name: "preview", value: "", y: 240, inputEl: {
+                dataset: {}, readOnly: false,
+                setAttribute() {}, addEventListener() {},
+            } },
         ];
+        this.size = [400, 300];
         this.dirty = 0;
         this.executed = 0;
     }
+    setSize(size) { this.size = size; }
     setDirtyCanvas() { this.dirty++; }
     onExecuted() { this.executed++; }
 }
@@ -36,7 +41,8 @@ node.onNodeCreated();
 const lora = () => node.widgets[0];
 const preview = () => node.widgets[1];
 
-assert.equal(preview().disabled, true);
+assert.equal(preview().disabled, undefined, "disabled would hide the widget");
+assert.equal(preview().inputEl.readOnly, true, "the textarea is read-only instead");
 assert.equal(preview().options.read_only, true);
 assert.equal(preview().serializeValue(), "");
 

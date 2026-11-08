@@ -8,12 +8,22 @@ const PLACEHOLDER = "Choose a LoRA to read its sidecar.";
 // after every run. It is never serialized into the workflow, so a saved
 // workflow does not carry stale metadata.
 function makeReadOnly(widget) {
-    widget.disabled = true;
+    // Do not use widget.disabled: current frontends hide disabled DOM-backed
+    // widgets entirely, which is why the preview was invisible.
     widget.options ??= {};
     widget.options.read_only = true;
-    if (widget.inputEl) widget.inputEl.readOnly = true;
     widget.callback = () => {};
     widget.serializeValue = () => "";
+    lockInput(widget);
+}
+
+function lockInput(widget) {
+    const input = widget.inputEl;
+    if (!input || input.dataset.sidecarLocked) return;
+    input.readOnly = true;
+    input.setAttribute("readonly", "readonly");
+    input.addEventListener("beforeinput", (event) => event.preventDefault());
+    input.dataset.sidecarLocked = "1";
 }
 
 function findWidget(node, name) {
@@ -23,7 +33,14 @@ function findWidget(node, name) {
 function setPreview(node, text) {
     const preview = findWidget(node, "preview");
     if (!preview || preview.value === text) return;
+    // Use the widget's own setter so the DOM textarea updates, then make sure
+    // the node is tall enough to show a few lines of the summary.
+    if (typeof preview.options?.setValue === "function") preview.options.setValue(text);
+    else preview.value = text;
     preview.value = text;
+    lockInput(preview);
+    const needed = (preview.y ?? 0) + 150;
+    if (node.size[1] < needed) node.setSize([node.size[0], needed]);
     node.setDirtyCanvas?.(true, true);
 }
 
