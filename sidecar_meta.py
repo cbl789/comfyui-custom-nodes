@@ -61,6 +61,17 @@ def compose_prompt(prompt, triggers, mode):
     return text.rstrip() + SEPARATOR + trigger_text
 
 
+def response(lora_name, model_path):
+    """Payload for the preview widget, also served to the frontend before a run."""
+    metadata = load_sidecar(model_path)
+    return {
+        "name": lora_name,
+        "found": metadata is not None,
+        "summary": summary(metadata, lora_name),
+        "triggers": trigger_texts(metadata),
+    }
+
+
 def summary(metadata, lora_name):
     """Read-only human summary shown in the node's preview widget."""
     lines = [f"LoRA: {lora_name}"]

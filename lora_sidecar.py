@@ -8,7 +8,7 @@ import folder_paths
 from comfy_api.latest import io
 
 from .sidecar_meta import (
-    MODES, compose_prompt, load_sidecar, strength_values, summary, trigger_texts,
+    MODES, compose_prompt, load_sidecar, response, strength_values, summary, trigger_texts,
 )
 
 
@@ -27,6 +27,38 @@ def _load_lora(lora_path):
     )
     _cached_lora["entry"] = (key, lora, metadata)
     return lora, metadata
+
+SIDECAR_ROUTE = "/comfyui-custom-nodes/sidecar"
+
+
+def _register_sidecar_route():
+    """Let the frontend read the sidecar before the node runs.
+
+    The browser cannot read the models folder, so the preview would otherwise
+    stay empty until the first execution. Read-only, and only for names the
+    LoRA list already knows.
+    """
+    try:
+        from aiohttp import web
+        from server import PromptServer
+    except Exception:
+        return
+    instance = getattr(PromptServer, "instance", None)
+    if instance is None:
+        return
+
+    @instance.routes.get(SIDECAR_ROUTE)
+    async def _sidecar(request):
+        name = request.query.get("name", "")
+        if name not in folder_paths.get_filename_list("loras"):
+            return web.json_response({"error": "unknown lora"}, status=404)
+        path = folder_paths.get_full_path("loras", name)
+        if not path:
+            return web.json_response({"error": "lora not found"}, status=404)
+        return web.json_response(response(name, path))
+
+
+_register_sidecar_route()
 
 
 class LoraSidecarLoader(io.ComfyNode):

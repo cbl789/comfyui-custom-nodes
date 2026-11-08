@@ -191,7 +191,7 @@ in the ComfyUI host's `tools/model-sidecars` (schema, README, validator).
 | `prompt` | The positive prompt. Connect your text encoder's prompt here |
 | `strength_model`, `strength_clip` | As in the built-in loader |
 | `use_sidecar_strength` | Advanced. Use the sidecar's creator-recommended model and clip strengths where it records them |
-| `preview` | Read-only summary of the sidecar, filled after the run |
+| `preview` | Read-only summary of the sidecar, filled as soon as you choose a LoRA and refreshed after each run |
 
 Outputs are `model`, `clip`, `prompt` and `triggers`. `triggers` always carries the
 words so you can use them elsewhere; `prompt` only changes in **Append triggers** mode.
@@ -203,8 +203,10 @@ The node never invents metadata. When the sidecar is missing or malformed the
 Fields the sidecar does not record are left alone: `use_sidecar_strength` only
 overrides a strength that the sidecar actually has.
 
-The preview is not serialized into the workflow, so a saved workflow does not carry
-stale metadata. Refresh your browser after installing updates.
+The preview is read from the sidecar as soon as a LoRA is selected (a read-only
+endpoint answers for names the LoRA list already knows), so the settings are visible
+before the first run. It is not serialized into the workflow, so a saved workflow does
+not carry stale metadata. Refresh your browser after installing updates.
 
 ## Upstream
 

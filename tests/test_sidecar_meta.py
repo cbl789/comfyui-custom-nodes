@@ -119,5 +119,25 @@ class SummaryTests(unittest.TestCase):
         self.assertIn("...", _module.summary(metadata, "x.safetensors"))
 
 
+class ResponseTests(unittest.TestCase):
+    def test_payload_reports_found_summary_and_triggers(self):
+        with tempfile.TemporaryDirectory() as folder:
+            model = Path(folder) / "example.safetensors"
+            model.write_text("")
+            Path(str(model) + ".json").write_text(json.dumps(SIDECAR))
+            data = _module.response("loras/example.safetensors", model)
+            self.assertTrue(data["found"])
+            self.assertEqual(data["name"], "loras/example.safetensors")
+            self.assertEqual(data["triggers"], ["famegrid", "rlskn"])
+            self.assertIn("Example LoRA", data["summary"])
+
+    def test_payload_without_a_sidecar_is_still_well_formed(self):
+        with tempfile.TemporaryDirectory() as folder:
+            data = _module.response("loras/none.safetensors", Path(folder) / "none.safetensors")
+            self.assertFalse(data["found"])
+            self.assertEqual(data["triggers"], [])
+            self.assertIn("Sidecar: none", data["summary"])
+
+
 if __name__ == "__main__":
     unittest.main()
